@@ -49,7 +49,7 @@ export default async function handler(req, res) {
           <meta property="og:title" content="${sanitizedTitle}">
           <meta property="og:description" content="${sanitizedDescription}">
           <meta property="og:image" content="${opportunity.visual}">
-          <meta property="og:url" content="${baseUrl}/opportunity/${id}">
+          <meta property="og:url" content="${baseUrl}/api/meta?id=${id}">
           <meta property="og:type" content="article">
           <meta property="og:site_name" content="Capital Connect">
 
