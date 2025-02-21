@@ -1,36 +1,38 @@
 export default async function handler(req, res) {
           const { id } = req.query;
-
+        
           if (!id) {
-                    return res.status(400).json({ error: "Missing ID parameter" });
+            return res.status(400).json({ error: "Missing ID parameter" });
           }
-
+        
           try {
-                    // Define your Laravel API URL
-                    const apiUrl = `https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`;
-
-                    // Securely store the API token in Vercel environment variables
-                    const token = await getAuthToken();
-
-                    // Fetch opportunity data from Laravel API with authentication
-                    const response = await fetch(apiUrl, {
-                              method: "GET",
-                              headers: {
-                                        "Authorization": `Bearer 62|bohCXQFbTiq5ziajR5kNq4d3Qm3HxAExyXEq0AR2179e61a7`,
-                                        "Content-Type": "application/json"
-                              }
-                    });
-
-                    // Handle error if API request fails
-                    if (!response.ok) {
-                              throw new Error(`API Error: ${response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    const opportunity = data.result;
-
-                    // Generate meta tags dynamically
-                    const html = `
+            // 1️⃣ Get Token Securely from API
+            const token = await getAuthToken();
+        
+            if (!token) {
+              throw new Error("Authentication token missing.");
+            }
+        
+            // 2️⃣ Fetch Opportunity Data Using Token
+            const apiUrl = `https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`;
+        
+            const response = await fetch(apiUrl, {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+              }
+            });
+        
+            if (!response.ok) {
+              throw new Error(`API Error: ${response.statusText}`);
+            }
+        
+            const data = await response.json();
+            const opportunity = data.result;
+        
+            // 3️⃣ Generate Metadata & Prevent Redirect Loops
+            const html = `
               <!DOCTYPE html>
               <html lang="en">
               <head>
@@ -52,34 +54,42 @@ export default async function handler(req, res) {
                   <meta name="twitter:description" content="${opportunity.description}">
                   <meta name="twitter:image" content="${opportunity.visual}">
         
-                  <!-- Redirect to actual opportunity page -->
-                  <meta http-equiv="refresh" content="0;url=https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}">
+                  <!-- 🛑 Only One Redirect After 3s to Avoid Infinite Loops -->
+                  <meta http-equiv="refresh" content="3;url=https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}">
               </head>
               <body>
-                  <p>Redirecting...</p>
+                  <p>Redirecting to opportunity details...</p>
               </body>
               </html>
             `;
-
-                    res.setHeader("Content-Type", "text/html");
-                    res.send(html);
+        
+            res.setHeader("Content-Type", "text/html");
+            res.send(html);
           } catch (error) {
-                    console.error("Error fetching metadata:", error);
-                    res.status(500).json({ error: "Failed to fetch metadata" });
+            console.error("Error fetching metadata:", error);
+            res.status(500).json({ error: "Failed to fetch metadata" });
           }
-
-
-
-
-
-          async function getAuthToken() {
-                    const loginResponse = await fetch("https://api.capitalbelgium.be/api/youngster/generate-token", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                    });
-
-                    const responseData = await loginResponse.json();
-                    return responseData.result[0]; // Token is first element in result array
+        }
+        
+        /**
+         * ✅ Fetch Authentication Token Securely
+         */
+        async function getAuthToken() {
+          try {
+            const loginResponse = await fetch("https://api.capitalbelgium.be/api/youngster/generate-token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+        
+            if (!loginResponse.ok) {
+              throw new Error(`Token Generation Failed: ${loginResponse.statusText}`);
+            }
+        
+            const responseData = await loginResponse.json();
+            return responseData.result[0]; // Token is first element in result array
+          } catch (error) {
+            console.error("Error fetching token:", error);
+            return null;
           }
-
-}
+        }
+        
