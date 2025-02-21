@@ -1,28 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Your gateway to unique opportunities for growth and development">
     <meta name="author" content="B-Wyz">
     <title>Capital Connect</title>
-    <!-- font icons -->
-    <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
-    <!-- Bootstrap + Meyawo main styles -->
-	<link rel="stylesheet" href="assets/css/meyawo.css">
-    
-    <!-- Open Graph Meta Tags -->
+
+    <!-- Default Meta Tags (Will be replaced dynamically) -->
     <meta property="og:title" content="Capital Connect">
     <meta property="og:description" content="Your gateway to personal and professional opportunities in Brussels.">
     <meta property="og:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
     <meta property="og:url" content="https://capital-web-puce.vercel.app">
     <meta property="og:type" content="website">
-    
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Capital Connect">
     <meta name="twitter:description" content="Your gateway to personal and professional opportunities in Brussels.">
     <meta name="twitter:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
+
+    <!-- JavaScript to Fetch Metadata Dynamically -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const opportunityId = urlParams.get("id");
+
+            if (opportunityId) {
+                fetch(`/api/meta?id=${opportunityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.title = data.title;
+                        document.querySelector('meta[property="og:title"]').setAttribute("content", data.title);
+                        document.querySelector('meta[property="og:description"]').setAttribute("content", data.description);
+                        document.querySelector('meta[property="og:image"]').setAttribute("content", data.image);
+                        document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+                    })
+                    .catch(error => console.error("Error fetching metadata:", error));
+            }
+        });
+    </script>
 </head>
 <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
 
@@ -41,7 +58,7 @@
                     <a class="link" href="#portfolio">Portfolio</a>
                 </li>
                 <li class="item">
-                    <a class="link" href="#testmonial">Testmonial</a>
+                    <a class="link" href="#testmonial">Testimonial</a>
                 </li>
                 <li class="item">
                     <a class="link" href="#blog">Blog</a>
@@ -61,7 +78,7 @@
         </div>          
     </nav><!-- End of Page Navbar -->
 
-    <!-- page header -->
+    <!-- Page Header -->
     <header id="home" class="header">
         <div class="overlay"></div>
         <div class="header-content container"> 
@@ -71,17 +88,16 @@
             <p style="text-align: center"; class="header-subtitle">Your
                 gateway to personal and professional
                 opportunities in Brussels.</p>            
-
-    </header><!-- end of page header --> 
+    </header><!-- End of Page Header --> 
 	
-	<!-- core  -->
+    <!-- Core Scripts -->
     <script src="assets/vendors/jquery/jquery-3.4.1.js"></script>
     <script src="assets/vendors/bootstrap/bootstrap.bundle.js"></script>
 
-    <!-- bootstrap 3 affix -->
-	<script src="assets/vendors/bootstrap/bootstrap.affix.js"></script>
+    <!-- Bootstrap Affix -->
+    <script src="assets/vendors/bootstrap/bootstrap.affix.js"></script>
 
-    <!-- Meyawo js -->
+    <!-- Meyawo JS -->
     <script src="assets/js/meyawo.js"></script>
 
 </body>

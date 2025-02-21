@@ -1,17 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/opportunity/:id",
-      "destination": "/api/meta?id=:id"
+      "source": "/RootNavView/OpportunityDetails",
+      "destination": "/api/meta"
     },
     {
-      "source": "/RootNavView/OpportunityDetails",
-      "has": [
-        {
-          "type": "query",
-          "key": "id"
-        }
-      ],
+      "source": "/opportunity/:id",
       "destination": "/api/meta?id=:id"
     }
   ]

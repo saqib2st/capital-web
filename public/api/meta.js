@@ -1,70 +1,83 @@
 export default async function handler(req, res) {
+  const { id } = req.query;
+
+  if (!id) {
+    return res.status(400).json({ error: "Missing ID parameter" });
+  }
+
   try {
-    const { id } = req.query;
-    if (!id) {
-      return res.status(400).json({ error: 'ID is required' });
+    // ✅ 1. Get Token Securely
+    const token = await getAuthToken();
+
+    if (!token) {
+      throw new Error("Authentication token missing.");
     }
 
-    // Fetch your opportunity data
-    const opportunity = await fetchOpportunity(id);
-    
-    // Ensure we have a valid opportunity
-    if (!opportunity) {
-      return res.status(404).json({ error: 'Opportunity not found' });
+    // ✅ 2. Fetch Opportunity Details
+    const apiUrl = `https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`;
+
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
     }
 
-    // Ensure image URL is absolute
-    const imageUrl = opportunity.visual?.startsWith('http') 
-      ? opportunity.visual 
-      : `https://capital-web-puce.vercel.app${opportunity.visual}`;
+    const data = await response.json();
+    const opportunity = data.result;
 
-    const sanitizedTitle = (opportunity.title || 'Capital Connect Opportunity').replace(/"/g, '&quot;');
-    const sanitizedDescription = (opportunity.description || 'View this opportunity on Capital Connect').replace(/"/g, '&quot;');
-    const baseUrl = 'https://capital-web-puce.vercel.app';
-
-    const html = `
+    // ✅ 3. Serve Metadata FIRST, Then Redirect
+    res.setHeader("Content-Type", "text/html");
+    res.status(200).send(`
       <!DOCTYPE html>
       <html lang="en">
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           
-          <title>${sanitizedTitle}</title>
+          <title>${opportunity.title}</title>
 
-          <!-- Open Graph -->
-          <meta property="og:title" content="${sanitizedTitle}" />
-          <meta property="og:description" content="${sanitizedDescription}" />
-          <meta property="og:image" content="${imageUrl}" />
-          <meta property="og:url" content="${baseUrl}/api/meta?id=${id}" />
-          <meta property="og:type" content="website" />
-          <meta property="og:site_name" content="Capital Connect" />
+          <!-- Open Graph Metadata for WhatsApp, Skype, Facebook -->
+          <meta property="og:title" content="${opportunity.title}">
+          <meta property="og:description" content="${opportunity.description}">
+          <meta property="og:image" content="${opportunity.visual}">
+          <meta property="og:url" content="https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}">
+          <meta property="og:type" content="website">
 
-          <!-- Twitter Card -->
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@capitalconnect" />
-          <meta name="twitter:title" content="${sanitizedTitle}" />
-          <meta name="twitter:description" content="${sanitizedDescription}" />
-          <meta name="twitter:image" content="${imageUrl}" />
+          <!-- Twitter Card Metadata -->
+          <meta name="twitter:card" content="summary_large_image">
+          <meta name="twitter:title" content="${opportunity.title}">
+          <meta name="twitter:description" content="${opportunity.description}">
+          <meta name="twitter:image" content="${opportunity.visual}">
 
-          <!-- Redirect -->
-          <meta http-equiv="refresh" content="0;url=${baseUrl}/RootNavView/OpportunityDetails?id=${id}" />
+          <!-- ✅ No Redirect for OG Bots, Only for Users -->
+          <script>
+              if (navigator.userAgent.indexOf("facebookexternalhit") === -1 && 
+                  navigator.userAgent.indexOf("WhatsApp") === -1 && 
+                  navigator.userAgent.indexOf("Twitterbot") === -1) {
+                  window.location.href = "https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}";
+              }
+          </script>
       </head>
       <body>
           <p>Redirecting to opportunity details...</p>
       </body>
       </html>
-    `;
-
-    // Add debug headers to see what's being sent
-    res.setHeader('Content-Type', 'text/html');
-    return res.status(200).send(html);
-
+    `);
   } catch (error) {
-    console.error('Meta generation error:', error);
-    return res.status(500).json({ error: 'Failed to generate meta tags' });
+    console.error("Error fetching metadata:", error);
+    res.status(500).json({ error: "Failed to fetch metadata" });
   }
 }
 
+/**
+ * ✅ Fetch Authentication Token Securely
+ */
 async function getAuthToken() {
   try {
     const loginResponse = await fetch("https://api.capitalbelgium.be/api/youngster/generate-token", {
