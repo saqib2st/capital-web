@@ -1,20 +1,12 @@
 {
-  "redirects": [
+  "rewrites": [
+    {
+      "source": "/RootNavView/OpportunityDetails",
+      "destination": "/api/meta"
+    },
     {
       "source": "/opportunity/:id",
-      "destination": "/api/meta?id=:id",
-      "permanent": false
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/meta",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, stale-while-revalidate=86400"
-        }
-      ]
+      "destination": "/api/meta?id=:id"
     }
   ]
 }

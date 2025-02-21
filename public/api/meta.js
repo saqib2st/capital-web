@@ -6,14 +6,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1️⃣ Fetch API Token Securely
+    // 1️⃣ Get Token Securely
     const token = await getAuthToken();
 
     if (!token) {
       throw new Error("Authentication token missing.");
     }
 
-    // 2️⃣ Fetch Opportunity Data Using Token
+    // 2️⃣ Fetch Opportunity Details
     const apiUrl = `https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`;
 
     const response = await fetch(apiUrl, {
@@ -31,11 +31,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     const opportunity = data.result;
 
-    // 3️⃣ Generate Metadata & Prevent Redirect Loops
-    const sanitizedTitle = opportunity.title.replace(/"/g, '&quot;');
-    const sanitizedDescription = opportunity.description.replace(/"/g, '&quot;');
-    const baseUrl = 'https://capital-web-puce.vercel.app';
-
+    // 3️⃣ Serve OG Tags for WhatsApp & Skype
     const html = `
       <!DOCTYPE html>
       <html lang="en">
@@ -43,24 +39,23 @@ export default async function handler(req, res) {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           
-          <title>${sanitizedTitle}</title>
+          <title>${opportunity.title}</title>
 
           <!-- Open Graph (WhatsApp, Skype, Facebook) -->
-          <meta property="og:title" content="${sanitizedTitle}">
-          <meta property="og:description" content="${sanitizedDescription}">
+          <meta property="og:title" content="${opportunity.title}">
+          <meta property="og:description" content="${opportunity.description}">
           <meta property="og:image" content="${opportunity.visual}">
-          <meta property="og:url" content="${baseUrl}/api/meta?id=${id}">
-          <meta property="og:type" content="article">
-          <meta property="og:site_name" content="Capital Connect">
+          <meta property="og:url" content="https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}">
+          <meta property="og:type" content="website">
 
           <!-- Twitter Card -->
           <meta name="twitter:card" content="summary_large_image">
-          <meta name="twitter:title" content="${sanitizedTitle}">
-          <meta name="twitter:description" content="${sanitizedDescription}">
+          <meta name="twitter:title" content="${opportunity.title}">
+          <meta name="twitter:description" content="${opportunity.description}">
           <meta name="twitter:image" content="${opportunity.visual}">
 
           <!-- Redirect After 3s -->
-          <meta http-equiv="refresh" content="3;url=${baseUrl}/RootNavView/OpportunityDetails?id=${id}">
+          <meta http-equiv="refresh" content="3;url=https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}">
       </head>
       <body>
           <p>Redirecting to opportunity details...</p>
@@ -76,14 +71,11 @@ export default async function handler(req, res) {
   }
 }
 
-/**
- * ✅ Fetch Authentication Token Securely
- */
 async function getAuthToken() {
   try {
     const loginResponse = await fetch("https://api.capitalbelgium.be/api/youngster/generate-token", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
 
     if (!loginResponse.ok) {
