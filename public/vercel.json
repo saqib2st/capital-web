@@ -1,8 +1,20 @@
-{                 
-                    "rewrites": [
-                      {
-                        "source": "/opportunity/:id",
-                        "destination": "/api/meta?id=:id"
-                      }
-                    ]                  
+{
+  "redirects": [
+    {
+      "source": "/opportunity/:id",
+      "destination": "/api/meta?id=:id",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/meta",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        }
+      ]
+    }
+  ]
 }
