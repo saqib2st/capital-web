@@ -1,11 +1,4 @@
-{
-          "redirects": [
-                    {
-                              "source": "/:path(.*)",
-                              "destination": "https://capital-web-puce.vercel.app/",
-                              "permanent": true
-                    }
-          ],
+{                 
                     "rewrites": [
                       {
                         "source": "/opportunity/:id",
