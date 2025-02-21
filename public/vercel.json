@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/RootNavView/OpportunityDetails",
-      "destination": "/api/meta"
-    },
-    {
       "source": "/opportunity/:id",
       "destination": "/api/meta?id=:id"
     }
