@@ -1,0 +1,24 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.capital.connect.app",
+      "sha256_cert_fingerprints": [
+        "1B:A0:09:29:94:FD:B6:43:23:A8:64:FC:88:77:36:C2:39:C7:C4:EC:7B:6F:8E:8D:5B:DB:D6:F9:4B:13:91:B1",
+        "18:E0:19:52:B4:B3:6B:37:D5:E9:91:F2:37:6D:A9:AB:DC:19:A0:D7:67:D4:A6:94:EF:D7:C0:7B:9D:4A:B9:1B"
+      ]
+    }
+  },
+  {
+    "redirects": [
+      {
+        "source": "/((?!RootNavView/OpportunityDetails).*)",
+        "destination": "https://capital-web-puce.vercel.app/",
+        "permanent": true
+      }
+    ]
+  }
+]
