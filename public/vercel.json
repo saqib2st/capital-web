@@ -3,6 +3,10 @@
     {
       "source": "/opportunity/:id",
       "destination": "/api/meta?id=:id"
+    },
+    {
+      "source": "/RootNavView/OpportunityDetails",
+      "destination": "/api/meta"
     }
   ]
 }
