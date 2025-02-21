@@ -73,14 +73,13 @@ export default async function handler(req, res) {
 
 
           async function getAuthToken() {
-                    const loginResponse = await fetch("https://api.capitalbelgium.be/api/youngster/login", {
+                    const loginResponse = await fetch("https://api.capitalbelgium.be/api/youngster/generate-token", {
                               method: "POST",
                               headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ email: "saqib.amin2323+test50@gmail.com", password: "Qwerty123$" })
                     });
 
                     const responseData = await loginResponse.json();
-                    return responseData.result.token; // Updated to access token from the correct path
+                    return responseData.result[0]; // Token is first element in result array
           }
 
 }
