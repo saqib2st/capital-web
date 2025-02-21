@@ -6,14 +6,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // ✅ 1. Get Token Securely
+    // ✅ Get API Token
     const token = await getAuthToken();
 
     if (!token) {
       throw new Error("Authentication token missing.");
     }
 
-    // ✅ 2. Fetch Opportunity Details
+    // ✅ Fetch Opportunity Details
     const apiUrl = `https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`;
 
     const response = await fetch(apiUrl, {
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     const opportunity = data.result;
 
-    // ✅ 3. Serve Metadata FIRST, Then Redirect
+    // ✅ Serve Open Graph Metadata
     res.setHeader("Content-Type", "text/html");
     res.status(200).send(`
       <!DOCTYPE html>
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
           
           <title>${opportunity.title}</title>
 
-          <!-- Open Graph Metadata for WhatsApp, Skype, Facebook -->
+          <!-- Open Graph Metadata -->
           <meta property="og:title" content="${opportunity.title}">
           <meta property="og:description" content="${opportunity.description}">
           <meta property="og:image" content="${opportunity.visual}">
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
           <meta name="twitter:description" content="${opportunity.description}">
           <meta name="twitter:image" content="${opportunity.visual}">
 
-          <!-- ✅ No Redirect for OG Bots, Only for Users -->
+          <!-- Redirect for Users, NOT for Crawlers -->
           <script>
               if (navigator.userAgent.indexOf("facebookexternalhit") === -1 && 
                   navigator.userAgent.indexOf("WhatsApp") === -1 && 
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 }
 
 /**
- * ✅ Fetch Authentication Token Securely
+ * ✅ Fetch API Token Securely
  */
 async function getAuthToken() {
   try {
