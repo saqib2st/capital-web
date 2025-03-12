@@ -1,17 +1,22 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/RootNavView/:path*",
-      "destination": "/index.html"
+      "destination": "/",
+      "permanent": false
     },
     {
       "source": "/RootNavView/OpportunityDetails",
-      "destination": "/index.html"
+      "destination": "/",
+      "permanent": false
     },
     {
       "source": "/RootNavView/OpportunityDetails/:id",
-      "destination": "/index.html"
-    },
+      "destination": "/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/api/meta",
       "destination": "/api/meta.js"
