@@ -22,57 +22,62 @@
 
     <!-- JavaScript -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Extract the opportunityId from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const opportunityId = urlParams.get("id");
+document.addEventListener("DOMContentLoaded", function() {
+    // Extract the opportunityId from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const opportunityId = urlParams.get("id");
 
-            // Define Deep Links
-            var appStoreURL = "https://apps.apple.com/app/6742452533"; // Replace with actual App Store URL
-            var playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app"; // Replace with actual Play Store URL
-            var deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`; // Dynamically include ID
+    // Define Deep Links
+    var appStoreURL = "https://apps.apple.com/app/YOUR-APP-ID";
+    var playStoreURL = "https://play.google.com/store/apps/details?id=YOUR-APP-ID";
+    var deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`;
 
-            // Device Detection
-            var isAndroid = /Android/i.test(navigator.userAgent);
-            var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var isAndroid = /Android/i.test(navigator.userAgent);
+    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-            // Function to Open App or Redirect
-            function openAppOrRedirect() {
-                if (isIOS) {
-                    window.location.href = deepLink;
-                    setTimeout(function () {
-                        window.location.href = appStoreURL;
-                    }, 2000);
-                } else if (isAndroid) {
-                    window.location.href = `intent://RootNavView/OpportunityDetails?id=${opportunityId || ""}#Intent;scheme=capitalconnect;package=com.capital.connect.app;S.browser_fallback_url=${encodeURIComponent(playStoreURL)};end;`;
-                } else {
-                    window.location.href = "https://capital-web-puce.vercel.app/";
-                }
-            }
+    function openAppOrRedirect() {
+        if (sessionStorage.getItem("deepLinkAttempted")) {
+            console.log("Deep link already attempted. Preventing infinite loop.");
+            return;
+        }
 
-            // Fetch Metadata Dynamically
-            if (opportunityId) {
-                fetch(`/api/meta?id=${opportunityId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.title = data.title;
-                        document.querySelector('meta[property="og:title"]').setAttribute("content", data.title);
-                        document.querySelector('meta[property="og:description"]').setAttribute("content", data.description);
-                        document.querySelector('meta[property="og:image"]').setAttribute("content", data.image);
-                        document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+        sessionStorage.setItem("deepLinkAttempted", "true");
 
-                        // Only redirect after metadata is updated
-                        openAppOrRedirect();
-                    })
-                    .catch(error => {
-                        console.error("Error fetching metadata:", error);
-                        openAppOrRedirect(); // Fallback if metadata fetch fails
-                    });
-            } else {
+        if (isIOS) {
+            window.location.href = deepLink;
+            setTimeout(() => {
+                window.location.href = appStoreURL;
+            }, 2000);
+        } else if (isAndroid) {
+            window.location.href = `intent://RootNavView/OpportunityDetails?id=${opportunityId || ""}#Intent;scheme=capitalconnect;package=com.capital.connect.app;S.browser_fallback_url=${encodeURIComponent(playStoreURL)};end;`;
+        } else {
+            window.location.href = "https://capital-web-puce.vercel.app/";
+        }
+    }
+
+    // Fetch Metadata Dynamically
+    if (opportunityId) {
+        fetch(`/api/meta?id=${opportunityId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.title = data.title;
+                document.querySelector('meta[property="og:title"]').setAttribute("content", data.title);
+                document.querySelector('meta[property="og:description"]').setAttribute("content", data.description);
+                document.querySelector('meta[property="og:image"]').setAttribute("content", data.image);
+                document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+
+                // Redirect only after metadata update
                 openAppOrRedirect();
-            }
-        });
-    </script>
+            })
+            .catch(error => {
+                console.error("Error fetching metadata:", error);
+                openAppOrRedirect();
+            });
+    } else {
+        openAppOrRedirect();
+    }
+});
+</script>
 </head>
 <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
 
