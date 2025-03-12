@@ -1,31 +1,12 @@
 {
   "redirects": [
     {
-      "source": "/RootNavView/:path*",
-      "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/RootNavView/OpportunityDetails",
-      "destination": "/",
+      "source": "/",
+      "destination": "https://apps.apple.com/app/YOUR-APP-ID",
       "permanent": false
     }
   ],
   "rewrites": [
-    { "source": "/RootNavView/OpportunityDetails",
-     "destination": "/" 
-    },
-    { "source": "/RootNavView/OpportunityDetails/id*",
-     "destination": "/" 
-    },
-    {
-      "source": "/api/meta",
-      "destination": "/api/meta.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    },
     {
       "source": "/RootNavView/OpportunityDetails",
       "destination": "/index.html"
