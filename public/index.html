@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="Your gateway to unique opportunities for growth and development">
-        <meta name="author" content="B-Wyz">
-        <title>Capital Connect</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const opportunityId = urlParams.get("id");
     
-        <!-- Default Open Graph Meta Tags (Replaced Dynamically) -->
-        <meta property="og:title" content="Capital Connect">
-        <meta property="og:description" content="Your gateway to personal and professional opportunities in Brussels.">
-        <meta property="og:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
-        <meta property="og:url" content="https://capital-web-puce.vercel.app">
-        <meta property="og:type" content="website">
+            var appStoreURL = "https://apps.apple.com/app/YOUR-APP-ID";  
+            var playStoreURL = "https://play.google.com/store/apps/details?id=YOUR-APP-ID"; 
+            var deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`;
     
-        <!-- Fetch Metadata from meta.js -->
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const urlParams = new URLSearchParams(window.location.search);
-                const opportunityId = urlParams.get("id");
+            var isAndroid = /Android/i.test(navigator.userAgent);
+            var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+            function openAppOrRedirect() {
+                if (sessionStorage.getItem("deepLinkAttempted")) {
+                    console.log("Deep link already attempted. Preventing infinite loop.");
+                    return;
+                }
+                sessionStorage.setItem("deepLinkAttempted", "true");
     
                 if (opportunityId) {
                     fetch(`/api/meta?id=${opportunityId}`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.redirectUrl) {
-                                window.location.href = data.redirectUrl; // Redirect if needed
+                                window.location.href = data.redirectUrl;
                             }
                             document.title = data.title || "Capital Connect";
                             document.querySelector('meta[property="og:title"]').setAttribute("content", data.title || "Capital Connect");
@@ -35,13 +34,23 @@
                         })
                         .catch(error => console.error("Error fetching metadata:", error));
                 }
-            });
-        </script>
     
-        <!-- CSS Styles -->
-        <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
-        <link rel="stylesheet" href="assets/css/meyawo.css">
-    </head>    
+                if (isIOS) {
+                    window.location.href = deepLink;
+                    setTimeout(() => {
+                        window.location.href = appStoreURL;
+                    }, 2000);
+                } else if (isAndroid) {
+                    window.location.href = `intent://RootNavView/OpportunityDetails?id=${opportunityId || ""}#Intent;scheme=capitalconnect;package=com.capital.connect.app;S.browser_fallback_url=${encodeURIComponent(playStoreURL)};end;`;
+                } else {
+                    window.location.href = playStoreURL;
+                }
+            }
+    
+            openAppOrRedirect();
+        });
+    </script>
+        
 <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
 
     <!-- Page Navbar -->

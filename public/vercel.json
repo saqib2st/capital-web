@@ -9,11 +9,6 @@
       "source": "/RootNavView/OpportunityDetails",
       "destination": "/",
       "permanent": false
-    },
-    {
-      "source": "/RootNavView/OpportunityDetails/:id",
-      "destination": "/",
-      "permanent": false
     }
   ],
   "rewrites": [
@@ -22,7 +17,7 @@
       "destination": "/api/meta.js"
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
