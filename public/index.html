@@ -20,12 +20,37 @@
     <meta name="twitter:description" content="Your gateway to personal and professional opportunities in Brussels.">
     <meta name="twitter:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
 
-    <!-- JavaScript to Fetch Metadata Dynamically -->
+    <!-- JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Extract the opportunityId from URL
             const urlParams = new URLSearchParams(window.location.search);
             const opportunityId = urlParams.get("id");
 
+            // Define Deep Links
+            var appStoreURL = "https://apps.apple.com/app/6742452533"; // Replace with actual App Store URL
+            var playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app"; // Replace with actual Play Store URL
+            var deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`; // Dynamically include ID
+
+            // Device Detection
+            var isAndroid = /Android/i.test(navigator.userAgent);
+            var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            // Function to Open App or Redirect
+            function openAppOrRedirect() {
+                if (isIOS) {
+                    window.location.href = deepLink;
+                    setTimeout(function () {
+                        window.location.href = appStoreURL;
+                    }, 2000);
+                } else if (isAndroid) {
+                    window.location.href = `intent://RootNavView/OpportunityDetails?id=${opportunityId || ""}#Intent;scheme=capitalconnect;package=com.capital.connect.app;S.browser_fallback_url=${encodeURIComponent(playStoreURL)};end;`;
+                } else {
+                    window.location.href = "https://capital-web-puce.vercel.app/";
+                }
+            }
+
+            // Fetch Metadata Dynamically
             if (opportunityId) {
                 fetch(`/api/meta?id=${opportunityId}`)
                     .then(response => response.json())
@@ -35,8 +60,16 @@
                         document.querySelector('meta[property="og:description"]').setAttribute("content", data.description);
                         document.querySelector('meta[property="og:image"]').setAttribute("content", data.image);
                         document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+
+                        // Only redirect after metadata is updated
+                        openAppOrRedirect();
                     })
-                    .catch(error => console.error("Error fetching metadata:", error));
+                    .catch(error => {
+                        console.error("Error fetching metadata:", error);
+                        openAppOrRedirect(); // Fallback if metadata fetch fails
+                    });
+            } else {
+                openAppOrRedirect();
             }
         });
     </script>
@@ -48,27 +81,13 @@
         <div class="container">
             <a class="logo" href="#">CAPITAL</a>         
             <ul class="nav">
-                <li class="item">
-                    <a class="link" href="#home">Home</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#about">About</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#portfolio">Portfolio</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#testmonial">Testimonial</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#blog">Blog</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#contact">Contact</a>
-                </li>
-                <li class="item ml-md-3">
-                    <a href="components.html" class="btn btn-primary">Components</a>
-                </li>
+                <li class="item"><a class="link" href="#home">Home</a></li>
+                <li class="item"><a class="link" href="#about">About</a></li>
+                <li class="item"><a class="link" href="#portfolio">Portfolio</a></li>
+                <li class="item"><a class="link" href="#testmonial">Testimonial</a></li>
+                <li class="item"><a class="link" href="#blog">Blog</a></li>
+                <li class="item"><a class="link" href="#contact">Contact</a></li>
+                <li class="item ml-md-3"><a href="components.html" class="btn btn-primary">Components</a></li>
             </ul>
             <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic">
                 <div class="hamburger-box">
@@ -82,23 +101,15 @@
     <header id="home" class="header">
         <div class="overlay"></div>
         <div class="header-content container"> 
-            <h1 class="header-title">
-                <span style="text-align: center"; class="up">Capital Connect</span>
-            </h1>
-            <p style="text-align: center"; class="header-subtitle">Your
-                gateway to personal and professional
-                opportunities in Brussels.</p>            
+            <h1 class="header-title"><span class="up">Capital Connect</span></h1>
+            <p class="header-subtitle">Your gateway to personal and professional opportunities in Brussels.</p>            
+        </div>
     </header><!-- End of Page Header --> 
 	
     <!-- Core Scripts -->
     <script src="assets/vendors/jquery/jquery-3.4.1.js"></script>
     <script src="assets/vendors/bootstrap/bootstrap.bundle.js"></script>
-
-    <!-- Bootstrap Affix -->
     <script src="assets/vendors/bootstrap/bootstrap.affix.js"></script>
-
-    <!-- Meyawo JS -->
-    <script src="assets/js/meyawo.js"></script>
-
+	
 </body>
 </html>
