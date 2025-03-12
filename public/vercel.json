@@ -25,6 +25,18 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    },
+    {
+      "source": "/RootNavView/OpportunityDetails",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/RootNavView/OpportunityDetails/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
