@@ -5,51 +5,65 @@
             const urlParams = new URLSearchParams(window.location.search);
             const opportunityId = urlParams.get("id");
     
-            var appStoreURL = "https://apps.apple.com/app/YOUR-APP-ID";  
-            var playStoreURL = "https://play.google.com/store/apps/details?id=YOUR-APP-ID"; 
-            var deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`;
+            const appStoreURL = "https://apps.apple.com/app/YOUR-APP-ID";  
+            const playStoreURL = "https://play.google.com/store/apps/details?id=YOUR-APP-ID"; 
+            const deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`;
     
-            var isAndroid = /Android/i.test(navigator.userAgent);
-            var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            let deepLinkAttempted = false;
     
             function openAppOrRedirect() {
-                if (sessionStorage.getItem("deepLinkAttempted")) {
+                if (deepLinkAttempted) {
                     console.log("Deep link already attempted. Preventing infinite loop.");
                     return;
                 }
-                sessionStorage.setItem("deepLinkAttempted", "true");
-    
-                if (opportunityId) {
-                    fetch(`/api/meta?id=${opportunityId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.redirectUrl) {
-                                window.location.href = data.redirectUrl;
-                            }
-                            document.title = data.title || "Capital Connect";
-                            document.querySelector('meta[property="og:title"]').setAttribute("content", data.title || "Capital Connect");
-                            document.querySelector('meta[property="og:description"]').setAttribute("content", data.description || "Explore new opportunities.");
-                            document.querySelector('meta[property="og:image"]').setAttribute("content", data.image || "https://capital-web-puce.vercel.app/assets/imgs/logo.png");
-                            document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
-                        })
-                        .catch(error => console.error("Error fetching metadata:", error));
-                }
+                deepLinkAttempted = true;
     
                 if (isIOS) {
+                    console.log("Trying iOS deep link:", deepLink);
                     window.location.href = deepLink;
                     setTimeout(() => {
+                        console.log("iOS Deep link failed, redirecting to App Store...");
                         window.location.href = appStoreURL;
-                    }, 2000);
+                    }, 2500);
                 } else if (isAndroid) {
+                    console.log("Trying Android deep link with intent...");
                     window.location.href = `intent://RootNavView/OpportunityDetails?id=${opportunityId || ""}#Intent;scheme=capitalconnect;package=com.capital.connect.app;S.browser_fallback_url=${encodeURIComponent(playStoreURL)};end;`;
+                    setTimeout(() => {
+                        console.log("Android Deep link failed, redirecting to Play Store...");
+                        window.location.href = playStoreURL;
+                    }, 2500);
                 } else {
+                    console.log("Neither Android nor iOS, redirecting to store...");
                     window.location.href = playStoreURL;
                 }
             }
     
-            openAppOrRedirect();
+            // ✅ Fetch Metadata Separately
+            function fetchMetadata() {
+                if (!opportunityId) return;
+    
+                console.log("Fetching metadata for ID:", opportunityId);
+                fetch(`/api/meta?id=${opportunityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Metadata received:", data);
+                        document.title = data.title || "Capital Connect";
+                        document.querySelector('meta[property="og:title"]').setAttribute("content", data.title || "Capital Connect");
+                        document.querySelector('meta[property="og:description"]').setAttribute("content", data.description || "Explore new opportunities.");
+                        document.querySelector('meta[property="og:image"]').setAttribute("content", data.image || "https://capital-web-puce.vercel.app/assets/imgs/logo.png");
+                        document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+                    })
+                    .catch(error => console.error("Error fetching metadata:", error));
+            }
+    
+            // ✅ Execute Both Functions
+            fetchMetadata();
+            setTimeout(openAppOrRedirect, 500);
         });
     </script>
+    
         
 <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
 
