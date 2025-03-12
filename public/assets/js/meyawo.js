@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const opportunityId = urlParams.get("id");
 
     var appStoreURL = "https://apps.apple.com/app/6742452533";
-            var playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
+    var playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
     var deepLink = `capitalconnect://RootNavView/OpportunityDetails?id=${opportunityId || ""}`;
 
     var isAndroid = /Android/i.test(navigator.userAgent);
