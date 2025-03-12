@@ -29,24 +29,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Fetch Metadata Dynamically Before Redirecting
+    // ✅ Fetch Metadata Before Redirecting
     if (opportunityId) {
         fetch(`/api/meta?id=${opportunityId}`)
             .then(response => response.json())
             .then(data => {
-                document.title = data.title;
-                document.querySelector('meta[property="og:title"]').setAttribute("content", data.title);
-                document.querySelector('meta[property="og:description"]').setAttribute("content", data.description);
-                document.querySelector('meta[property="og:image"]').setAttribute("content", data.image);
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+                document.title = data.title || "Capital Connect";
+                document.querySelector('meta[property="og:title"]').setAttribute("content", data.title || "Capital Connect");
+                document.querySelector('meta[property="og:description"]').setAttribute("content", data.description || "Explore new opportunities.");
+                document.querySelector('meta[property="og:image"]').setAttribute("content", data.image || "https://capital-web-puce.vercel.app/assets/imgs/logo.png");
                 document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
 
                 openAppOrRedirect(); // Redirect after metadata update
             })
             .catch(error => {
                 console.error("Error fetching metadata:", error);
-                openAppOrRedirect(); // Redirect even if metadata fetch fails
+                openAppOrRedirect();
             });
     } else {
         openAppOrRedirect();
     }
 });
+
+

@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Your gateway to unique opportunities for growth and development">
-    <meta name="author" content="B-Wyz">
-    <title>Capital Connect</title>
-
-    <!-- Default Meta Tags (Updated Dynamically) -->
-    <meta property="og:title" content="Capital Connect">
-    <meta property="og:description" content="Your gateway to personal and professional opportunities in Brussels.">
-    <meta property="og:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
-    <meta property="og:url" content="https://capital-web-puce.vercel.app">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Capital Connect">
-    <meta name="twitter:description" content="Your gateway to personal and professional opportunities in Brussels.">
-    <meta name="twitter:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
-
-    <!-- CSS Styles -->
-    <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
-    <link rel="stylesheet" href="assets/css/meyawo.css">
-
-    <!-- JavaScript -->
-</head>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Your gateway to unique opportunities for growth and development">
+        <meta name="author" content="B-Wyz">
+        <title>Capital Connect</title>
+    
+        <!-- Default Open Graph Meta Tags (Replaced Dynamically) -->
+        <meta property="og:title" content="Capital Connect">
+        <meta property="og:description" content="Your gateway to personal and professional opportunities in Brussels.">
+        <meta property="og:image" content="https://capital-web-puce.vercel.app/assets/imgs/logo.png">
+        <meta property="og:url" content="https://capital-web-puce.vercel.app">
+        <meta property="og:type" content="website">
+    
+        <!-- Fetch Metadata from meta.js -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const opportunityId = urlParams.get("id");
+    
+                if (opportunityId) {
+                    fetch(`/api/meta?id=${opportunityId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.redirectUrl) {
+                                window.location.href = data.redirectUrl; // Redirect if needed
+                            }
+                            document.title = data.title || "Capital Connect";
+                            document.querySelector('meta[property="og:title"]').setAttribute("content", data.title || "Capital Connect");
+                            document.querySelector('meta[property="og:description"]').setAttribute("content", data.description || "Explore new opportunities.");
+                            document.querySelector('meta[property="og:image"]').setAttribute("content", data.image || "https://capital-web-puce.vercel.app/assets/imgs/logo.png");
+                            document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+                        })
+                        .catch(error => console.error("Error fetching metadata:", error));
+                }
+            });
+        </script>
+    
+        <!-- CSS Styles -->
+        <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
+        <link rel="stylesheet" href="assets/css/meyawo.css">
+    </head>    
 <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
 
     <!-- Page Navbar -->
@@ -39,7 +55,6 @@
                 <li class="item"><a class="link" href="#testmonial">Testimonial</a></li>
                 <li class="item"><a class="link" href="#blog">Blog</a></li>
                 <li class="item"><a class="link" href="#contact">Contact</a></li>
-                <li class="item ml-md-3"><a href="components.html" class="btn btn-primary">Components</a></li>
             </ul>
             <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic">
                 <div class="hamburger-box">
