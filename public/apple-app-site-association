@@ -1,15 +1,12 @@
 {
-  "applinks": {
-    "apps": [],
-    "details": [
-      {
-        "appIDs": [
-          "XSPZ8DSH3Q.com.capital.connect.app"
-        ],
-        "paths": [
-          "/RootNavView/OpportunityDetails*"
-        ]
-      }
-    ]
-  }
+  "rewrites": [
+    {
+      "source": "/RootNavView/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
 }
