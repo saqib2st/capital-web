@@ -12,6 +12,12 @@
     }
   ],
   "rewrites": [
+    { "source": "/RootNavView/OpportunityDetails",
+     "destination": "/" 
+    },
+    { "source": "/RootNavView/OpportunityDetails/id*",
+     "destination": "/" 
+    },
     {
       "source": "/api/meta",
       "destination": "/api/meta.js"
