@@ -1,41 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Redirecting...</title>
-          <script>
-                    function getParameterByName(name, url = window.location.href) {
-                              name = name.replace(/[\[\]]/g, '\\$&');
-                              let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                                        results = regex.exec(url);
-                              if (!results) return null;
-                              if (!results[2]) return '';
-                              return decodeURIComponent(results[2].replace(/\+/g, ' '));
-                    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script>
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
 
-                    function redirectToStore() {
-                              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                              const opportunityId = getParameterByName('id');
-                              const appStoreURL = "https://apps.apple.com/app/6742452533";
-                              const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
+    function redirectToStore() {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const appStoreURL = "https://apps.apple.com/app/6742452533";
+      const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
+      const fallbackURL = "https://capital-web-puce.vercel.app/";
 
-                              if (/android/i.test(userAgent)) {
-                                        window.location.href = playStoreURL;
-                              } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream){
-                                        window.location.href = appStoreURL;
-                              } else {
-                                        window.location.href = "https://capital-web-puce.vercel.app/";
-                              }
-                    }
+      // Check if the user is on an iOS device
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        window.location.href = appStoreURL;
+      }
+      // Check if the user is on an Android device
+      else if (/android/i.test(userAgent)) {
+        window.location.href = playStoreURL;
+      }
+      // Fallback for desktop or other devices
+      else {
+        window.location.href = fallbackURL;
+      }
+    }
 
-                    window.onload = redirectToStore;
-          </script>
+    window.onload = redirectToStore;
+  </script>
 </head>
-
 <body>
-          <p>Redirecting to the app store...</p>
+  <p>Redirecting to the app store...</p>
 </body>
-
 </html>
