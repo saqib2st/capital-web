@@ -16,17 +16,27 @@
 
     function redirectToStore() {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const opportunityId = getParameterByName('id');
       const appStoreURL = "https://apps.apple.com/app/6742452533";
       const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
       const fallbackURL = "https://capital-web-puce.vercel.app/";
 
+      let finalAppStoreURL = appStoreURL;
+      let finalPlayStoreURL = playStoreURL;
+
+      // Append the opportunity ID to the store URLs if it exists
+      if (opportunityId) {
+        finalAppStoreURL += `?id=${opportunityId}`;
+        finalPlayStoreURL += `&id=${opportunityId}`;
+      }
+
       // Check if the user is on an iOS device
       if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        window.location.href = appStoreURL;
+        window.location.href = finalAppStoreURL;
       }
       // Check if the user is on an Android device
       else if (/android/i.test(userAgent)) {
-        window.location.href = playStoreURL;
+        window.location.href = finalPlayStoreURL;
       }
       // Fallback for desktop or other devices
       else {
@@ -38,6 +48,6 @@
   </script>
 </head>
 <body>
-  <p>Redirecting to the app store...</p>
+  <p>Redirecting to the store...</p>
 </body>
 </html>
