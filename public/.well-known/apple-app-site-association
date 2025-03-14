@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "6742452533.com.capital.connect.app",
+        "paths": ["/RootNavView/*"]
+      }
+    ]
+  }
+}
