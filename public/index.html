@@ -4,17 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecting...</title>
+  <!-- Dynamic Meta Tags -->
+  <meta property="og:title" content="Capital Connect">
+  <meta property="og:description" content="Explore opportunities with Capital Connect.">
+  <meta property="og:image" content="https://capital-web-puce.vercel.app/default-image.jpg">
+  <meta property="og:url" content="https://capital-web-puce.vercel.app/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Capital Connect">
+  <meta name="twitter:description" content="Explore opportunities with Capital Connect.">
+  <meta name="twitter:image" content="https://capital-web-puce.vercel.app/default-image.jpg">
   <script>
-    function getParameterByName(name, url = window.location.href) {
-      name = name.replace(/[\[\]]/g, '\\$&');
-      let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-          results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    async function generateToken() {
+      const response = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', {
+        method: 'POST',
+      });
+      const data = await response.json();
+      return data.result[0]; // Returns the token
     }
 
-    function redirectToStore() {
+    async function fetchOpportunityDetails(opportunityId, token) {
+      const response = await fetch(`https://api.capitalbelgium.be/api/youngster/opportunities/${opportunityId}?lang=en`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      return data.result; // Returns the opportunity details
+    }
+
+    function updateMetaTags(opportunity) {
+      const metaData = {
+        title: opportunity.title,
+        description: opportunity.description,
+        image: opportunity.visual,
+        url: `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${opportunity.id}`,
+      };
+
+      // Update meta tags
+      document.querySelector('meta[property="og:title"]').setAttribute('content', metaData.title);
+      document.querySelector('meta[property="og:description"]').setAttribute('content', metaData.description);
+      document.querySelector('meta[property="og:image"]').setAttribute('content', metaData.image);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', metaData.url);
+      document.querySelector('meta[name="twitter:title"]').setAttribute('content', metaData.title);
+      document.querySelector('meta[name="twitter:description"]').setAttribute('content', metaData.description);
+      document.querySelector('meta[name="twitter:image"]').setAttribute('content', metaData.image);
+    }
+
+    async function redirectToStore() {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const opportunityId = getParameterByName('id');
       const appStoreURL = "https://apps.apple.com/app/6742452533";
@@ -24,10 +61,20 @@
       let finalAppStoreURL = appStoreURL;
       let finalPlayStoreURL = playStoreURL;
 
-      // Append the opportunity ID to the store URLs if it exists
       if (opportunityId) {
-        finalAppStoreURL = appStoreURL;
-        finalPlayStoreURL += `&id=${opportunityId}`;
+        try {
+          // Generate token
+          const token = await generateToken();
+          // Fetch opportunity details
+          const opportunity = await fetchOpportunityDetails(opportunityId, token);
+          // Update meta tags
+          updateMetaTags(opportunity);
+          // Append the opportunity ID to the store URLs
+          finalAppStoreURL = appStoreURL;
+          finalPlayStoreURL += `&id=${opportunityId}`;
+        } catch (error) {
+          console.error('Error fetching opportunity details:', error);
+        }
       }
 
       // Check if the user is on an iOS device
@@ -42,6 +89,15 @@
       else {
         window.location.href = playStoreURL;
       }
+    }
+
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
 
     window.onload = redirectToStore;
