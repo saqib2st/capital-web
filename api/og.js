@@ -1,42 +1,49 @@
 // api/og.js
 export default async function handler(req, res) {
-          const { id } = req.query;
-        
-          // Fetch opportunity details from your API
-          let opportunity = {};
-          if (id) {
-            try {
-              // Generate token
-              const tokenResponse = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', {
-                method: 'POST',
-              });
-              const tokenData = await tokenResponse.json();
-              const token = tokenData.result[0];
-        
-              // Fetch opportunity details
-              const opportunityResponse = await fetch(`https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`, {
-                method: 'GET',
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
-              const opportunityData = await opportunityResponse.json();
-              opportunity = opportunityData.result;
-            } catch (error) {
-              console.error('Error fetching opportunity details:', error);
-            }
-          }
-        
-          // Default meta tags
-          const metaData = {
-            title: opportunity.title || 'Capital Connect',
-            description: opportunity.description || 'Explore opportunities with Capital Connect.',
-            image: opportunity.visual || 'https://via.placeholder.com/1200x630.png',
-            url: `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}`,
-          };
-        
-          // Generate HTML with meta tags
-          const html = `
+  const { id } = req.query;
+
+  // Fetch opportunity details from your API
+  let opportunity = {};
+  if (id) {
+    try {
+      // Generate token
+      const tokenResponse = await fetch(
+        "https://api.capitalbelgium.be/api/youngster/generate-token",
+        {
+          method: "POST",
+        }
+      );
+      const tokenData = await tokenResponse.json();
+      const token = tokenData.result[0];
+
+      // Fetch opportunity details
+      const opportunityResponse = await fetch(
+        `https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const opportunityData = await opportunityResponse.json();
+      opportunity = opportunityData.result;
+    } catch (error) {
+      console.error("Error fetching opportunity details:", error);
+    }
+  }
+
+  // Default meta tags
+  const metaData = {
+    title: opportunity.title || "Capital Connect",
+    description:
+      opportunity.description || "Explore opportunities with Capital Connect.",
+    image: opportunity.visual || "https://via.placeholder.com/1200x630.png",
+    url: `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}`,
+  };
+
+  // Generate HTML with meta tags
+  const html = `
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -51,7 +58,9 @@ export default async function handler(req, res) {
               <meta property="fb:app_id" content="YOUR_FACEBOOK_APP_ID">
               <meta name="twitter:card" content="summary_large_image">
               <meta name="twitter:title" content="${metaData.title}">
-              <meta name="twitter:description" content="${metaData.description}">
+              <meta name="twitter:description" content="${
+                metaData.description
+              }">
               <meta name="twitter:image" content="${metaData.image}">
             </head>
             <body>
@@ -63,13 +72,13 @@ export default async function handler(req, res) {
             </body>
             </html>
           `;
-        
-          res.status(200).send(html);
-        }
-        
-        // Client-side redirection logic
-        function redirectToStoreScript(opportunityId) {
-          return `
+
+  res.status(200).send(html);
+}
+
+// Client-side redirection logic
+function redirectToStoreScript(opportunityId) {
+  return `
             async function generateToken() {
               const response = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', {
                 method: 'POST',
@@ -87,12 +96,12 @@ export default async function handler(req, res) {
               let finalAppStoreURL = appStoreURL;
               let finalPlayStoreURL = playStoreURL;
         
-              if (${opportunityId ? `'${opportunityId}'` : 'null'}) {
+              if (${opportunityId ? `'${opportunityId}'` : "null"}) {
                 try {
                   // Generate token
                   const token = await generateToken();
                   // Append the opportunity ID to the store URLs
-                  finalAppStoreURL += '?id=${opportunityId}';
+                  finalAppStoreURL = appStoreURL;
                   finalPlayStoreURL += '&id=${opportunityId}';
                 } catch (error) {
                   console.error('Error fetching token:', error);
@@ -109,10 +118,10 @@ export default async function handler(req, res) {
               }
               // Fallback for desktop or other devices
               else {
-                window.location.href = fallbackURL;
+                window.location.href = playStoreURL;
               }
             }
         
             window.onload = redirectToStore;
           `;
-        }
+}
