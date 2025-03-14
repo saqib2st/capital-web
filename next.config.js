@@ -1,10 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-          async redirects() {
+          async rewrites() {
             return [
               {
                 source: "/RootNavView/:path*",
                 destination: "/[slug]?slug=:path*",
+              },
+            ];
+          },
+          async redirects() {
+            return [
+              {
+                source: "/",
+                destination: "/",
                 permanent: false,
               },
             ];
