@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     title: opportunity.title || "Capital Connect",
     description:
       opportunity.description || "Explore opportunities with Capital Connect.",
-    image: opportunity.visual || "https://via.placeholder.com/1200x630.png",
+    image: opportunity.visual || "default-image.png",
     url: `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}`,
   };
 
