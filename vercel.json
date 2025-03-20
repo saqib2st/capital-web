@@ -1,8 +1,8 @@
 {
   "routes": [
     {
-      "src": "/apple-app-site-association.json",
-      "dest": "/public/apple-app-site-association.json"
+      "src": "/apple-app-site-association",
+      "dest": "/public/apple-app-site-association"
     },
     {
       "src": "/.well-known/assetlinks.json",
