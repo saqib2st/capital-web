@@ -5,12 +5,7 @@
       "dest": "/.well-known/assetlinks.json"
     },
     {
-      "src": "/public/apple-app-site-association.json",
+      "src": "/apple-app-site-association.json",
       "dest": "/public/apple-app-site-association.json"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/og.js"
-    }
-  ]
+    }]
 }
