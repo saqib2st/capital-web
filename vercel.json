@@ -7,7 +7,7 @@
           "key": "Content-Type",
           "value": "application/json"
         }
-      ]
+      ] 
     },
     {
       "source": "/public/apple-app-site-association.json",
