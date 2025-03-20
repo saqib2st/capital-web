@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/.well-known/assetlinks.json",
+      "destination": "/.well-known/assetlinks.json"
+    },
+    {
+      "source": "/public/apple-app-site-association.json",
+      "destination": "/public/apple-app-site-association.json"
+    },
+    {
       "source": "/(.*)",
       "destination": "/api/og.js"
     }
