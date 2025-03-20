@@ -1,16 +1,16 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/.well-known/assetlinks.json",
-      "destination": "/.well-known/assetlinks.json"
+      "src": "/.well-known/assetlinks.json",
+      "dest": "/.well-known/assetlinks.json"
     },
     {
-      "source": "/public/apple-app-site-association.json",
-      "destination": "/public/apple-app-site-association.json"
+      "src": "/public/apple-app-site-association.json",
+      "dest": "/public/apple-app-site-association.json"
     },
     {
-      "source": "/(.*)",
-      "destination": "/api/og.js"
+      "src": "/(.*)",
+      "dest": "/api/og.js"
     }
   ]
 }
