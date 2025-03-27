@@ -4,7 +4,7 @@
     "details": [
       {
         "appID": "XSPZ8DSH3Q.com.capital.connect.app",
-        "paths": ["/RootNavView/*"]
+        "paths": ["/", "/RootNavView/*"]
       }
     ]
   }
