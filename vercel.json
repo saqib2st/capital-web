@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/.well-known/apple-app-site-association",
-      "dest": "/public/apple-app-site-association",
+      "dest": "/public/.well-known/apple-app-site-association",
       "headers": {
         "Content-Type": "application/json"
       }
