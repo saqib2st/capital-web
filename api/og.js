@@ -33,95 +33,95 @@ export default async function handler(req, res) {
     }
   }
 
-  // Default meta tags
-  const metaData = {
-    title: opportunity.title || "Capital Connect",
-    description:
-      opportunity.description || "Explore opportunities with Capital Connect.",
-    image: opportunity.visual || "default-image.png",
-    url: `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id}`,
-  };
+  // Universal Link for iOS
+  const universalLink = `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id || ''}`;
+  
+  // App Store URLs
+  const appStoreURL = "https://apps.apple.com/app/6742452533";
+  const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
 
-  // Generate HTML with meta tags
+  // Generate HTML with meta tags and smart redirection
   const html = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>${metaData.title}</title>
-              <meta property="og:type" content="website">
-              <meta property="og:title" content="${metaData.title}">
-              <meta property="og:description" content="${metaData.description}">
-              <meta property="og:image" content="${metaData.image}">
-              <meta property="og:url" content="${metaData.url}">
-              <meta property="fb:app_id" content="YOUR_FACEBOOK_APP_ID">
-              <meta name="twitter:card" content="summary_large_image">
-              <meta name="twitter:title" content="${metaData.title}">
-              <meta name="twitter:description" content="${
-                metaData.description
-              }">
-              <meta name="twitter:image" content="${metaData.image}">
-            </head>
-            <body>
-              <p>Redirecting to the store...</p>
-              <script>
-                // Client-side redirection logic
-                ${redirectToStoreScript(id)}
-              </script>
-            </body>
-            </html>
-          `;
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${opportunity.title || "Capital Connect"}</title>
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="${opportunity.title || "Capital Connect"}">
+      <meta property="og:description" content="${opportunity.description || "Explore opportunities with Capital Connect."}">
+      <meta property="og:image" content="${opportunity.visual || "default-image.png"}">
+      <meta property="og:url" content="https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id || ''}">
+      
+      <!-- Smart App Banner for iOS -->
+      <meta name="apple-itunes-app" content="app-id=6742452533, app-argument=${universalLink}">
+      
+      <!-- Twitter Card -->
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="${opportunity.title || "Capital Connect"}">
+      <meta name="twitter:description" content="${opportunity.description || "Explore opportunities with Capital Connect."}">
+      <meta name="twitter:image" content="${opportunity.visual || "default-image.png"}">
+      
+      <script>
+        // Universal Link handling with fallback
+        function openApp() {
+          const userAgent = navigator.userAgent.toLowerCase();
+          const isIOS = /iphone|ipad|ipod/.test(userAgent);
+          const isAndroid = /android/.test(userAgent);
+          
+          // Try to open the app directly
+          if (isIOS) {
+            // iOS Universal Link with iframe workaround
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = '${universalLink}';
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+              if (!document.hidden) {
+                window.location.href = '${appStoreURL}';
+              }
+              document.body.removeChild(iframe);
+            }, 500);
+            
+            window.addEventListener('blur', () => {
+              document.body.removeChild(iframe);
+            });
+          } 
+          else if (isAndroid) {
+            // Android App Link
+            window.location.href = '${universalLink}';
+            setTimeout(() => {
+              if (!document.hidden) {
+                window.location.href = '${playStoreURL}';
+              }
+            }, 500);
+          }
+          else {
+            // Desktop fallback
+            window.location.href = '${playStoreURL}';
+          }
+        }
+        
+        // Auto-trigger for direct URL access
+        if (!window.location.search.includes('noredirect=true')) {
+          openApp();
+        }
+      </script>
+    </head>
+    <body>
+      <div style="text-align: center; padding: 50px;">
+        <h1>${opportunity.title || "Capital Connect"}</h1>
+        <p>${opportunity.description || "Explore opportunities with Capital Connect."}</p>
+        <button onclick="openApp()" style="padding: 10px 20px; background: #007AFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
+          Open in App
+        </button>
+        <p>Or <a href="${universalLink}?noredirect=true">view in browser</a></p>
+      </div>
+    </body>
+    </html>
+  `;
 
   res.status(200).send(html);
-}
-
-// Client-side redirection logic
-function redirectToStoreScript(opportunityId) {
-  return `
-            async function generateToken() {
-              const response = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', {
-                method: 'POST',
-              });
-              const data = await response.json();
-              return data.result[0]; // Returns the token
-            }
-        
-            async function redirectToStore() {
-              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-              const appStoreURL = "https://apps.apple.com/app/6742452533";
-              const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
-              const fallbackURL = "https://capital-web-puce.vercel.app/";
-        
-              let finalAppStoreURL = appStoreURL;
-              let finalPlayStoreURL = playStoreURL;
-        
-              if (${opportunityId ? `'${opportunityId}'` : "null"}) {
-                try {
-                  // Generate token
-                  const token = await generateToken();
-                  // Append the opportunity ID to the store URLs
-                  finalAppStoreURL = appStoreURL;
-                  finalPlayStoreURL += '&id=${opportunityId}';
-                } catch (error) {
-                  console.error('Error fetching token:', error);
-                }
-              }
-        
-              // Check if the user is on an iOS device
-              if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                window.location.href = finalAppStoreURL;
-              }
-              // Check if the user is on an Android device
-              else if (/android/i.test(userAgent)) {
-                window.location.href = finalPlayStoreURL;
-              }
-              // Fallback for desktop or other devices
-              else {
-                window.location.href = playStoreURL;
-              }
-            }
-        
-            window.onload = redirectToStore;
-          `;
 }
