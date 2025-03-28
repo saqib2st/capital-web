@@ -43,3 +43,24 @@ The application is deployed on Vercel with automatic deployments from the main b
 ## Environment Variables
 Required environment variables:
 - `API_URL`: Base URL for the Capital backend API
+{
+      "src": "/.well-known/apple-app-site-association",
+      "dest": "/public/.well-known/apple-app-site-association",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "src": "/apple-app-site-association",
+      "dest": "/public/apple-app-site-association",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "src": "/.well-known/assetlinks.json",
+      "dest": "/public/.well-known/assetlinks.json",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
