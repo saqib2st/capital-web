@@ -2,111 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Redirecting...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capital Connect</title>
 
-  <!-- Default Meta Tags -->
-  <meta property="og:title" content="Capital Connect" />
-  <meta property="og:description" content="Explore opportunities with Capital Connect." />
-  <meta property="og:image" content="https://capital-web-puce.vercel.app/default-image.jpg" />
-  <meta property="og:url" content="https://capital-web-puce.vercel.app/" />
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://capital-web.vercel.app/?id=123" />
+  <meta property="og:title" content="Explore Opportunities | Capital Connect" />
+  <meta property="og:description" content="Check out this opportunity now on Capital Connect." />
+  <meta property="og:image" content="https://capital-web.vercel.app/default-image.jpg" />
+
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Capital Connect" />
-  <meta name="twitter:description" content="Explore opportunities with Capital Connect." />
-  <meta name="twitter:image" content="https://capital-web-puce.vercel.app/default-image.jpg" />
+  <meta name="twitter:url" content="https://capital-web.vercel.app/?id=123" />
+  <meta name="twitter:title" content="Explore Opportunities | Capital Connect" />
+  <meta name="twitter:description" content="Check out this opportunity now on Capital Connect." />
+  <meta name="twitter:image" content="https://capital-web.vercel.app/default-image.jpg" />
 
+  <!-- Fallback styling -->
   <style>
     body {
-      margin: 0;
       font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f3f3f3;
+      text-align: center;
+      margin: 0;
+      padding: 50px;
+      background-color: #f5f5f5;
     }
-    .download-banner {
-      background-color: #007AFF;
-      color: #fff;
-      padding: 15px 30px;
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 30px;
       border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #007AFF;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
     }
   </style>
-
-  <script>
-    async function generateToken() {
-      const res = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', { method: 'POST' });
-      const data = await res.json();
-      return data.result[0];
-    }
-
-    async function fetchOpportunityDetails(id, token) {
-      const res = await fetch(`https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      return data.result;
-    }
-
-    function updateMetaTags(opportunity) {
-      document.querySelector('meta[property="og:title"]').setAttribute('content', opportunity.title);
-      document.querySelector('meta[property="og:description"]').setAttribute('content', opportunity.description);
-      document.querySelector('meta[property="og:image"]').setAttribute('content', opportunity.visual);
-      document.querySelector('meta[property="og:url"]').setAttribute('content', `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${opportunity.id}`);
-      document.querySelector('meta[name="twitter:title"]').setAttribute('content', opportunity.title);
-      document.querySelector('meta[name="twitter:description"]').setAttribute('content', opportunity.description);
-      document.querySelector('meta[name="twitter:image"]').setAttribute('content', opportunity.visual);
-    }
-
-    function getParameterByName(name, url = window.location.href) {
-      name = name.replace(/[\[\]]/g, '\\$&');
-      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-      const results = regex.exec(url);
-      if (!results) return null;
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    }
-
-    async function openAppOrRedirect() {
-      const opportunityId = getParameterByName('id');
-      const iosStore = "https://apps.apple.com/app/id6742452533";
-      const androidStore = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
-      const fallbackURL = "https://capital-web-puce.vercel.app";
-      const appScheme = "capitalconnect://open"; // Replace with your actual deep link
-
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
-      const isAndroid = /android/i.test(userAgent);
-
-      let token = "";
-      let opportunity;
-
-      if (opportunityId) {
-        try {
-          token = await generateToken();
-          opportunity = await fetchOpportunityDetails(opportunityId, token);
-          updateMetaTags(opportunity);
-        } catch (e) {
-          console.warn("Meta update failed:", e);
-        }
-      }
-
-      const timeout = setTimeout(() => {
-        const redirectURL = isIOS ? iosStore : isAndroid ? androidStore : fallbackURL;
-        window.location.href = redirectURL;
-      }, 1500);
-
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = appScheme + (opportunityId ? `?id=${opportunityId}` : "");
-      document.body.appendChild(iframe);
-
-      window.addEventListener('blur', () => clearTimeout(timeout));
-    }
-  </script>
 </head>
 <body>
-  <div class="download-banner" onclick="openAppOrRedirect()">Open App</div>
+  
 </body>
 </html>
