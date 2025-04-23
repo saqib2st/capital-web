@@ -1,108 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Redirecting...</title>
-  <!-- Dynamic Meta Tags -->
-  <meta property="og:title" content="Capital Connect">
-  <meta property="og:description" content="Explore opportunities with Capital Connect.">
-  <meta property="og:image" content="https://capital-web-puce.vercel.app/default-image.jpg">
-  <meta property="og:url" content="https://capital-web-puce.vercel.app/">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Capital Connect">
-  <meta name="twitter:description" content="Explore opportunities with Capital Connect.">
-  <meta name="twitter:image" content="default-image.jpg">
+
+  <!-- Default Meta Tags -->
+  <meta property="og:title" content="Capital Connect" />
+  <meta property="og:description" content="Explore opportunities with Capital Connect." />
+  <meta property="og:image" content="https://capital-web-puce.vercel.app/default-image.jpg" />
+  <meta property="og:url" content="https://capital-web-puce.vercel.app/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Capital Connect" />
+  <meta name="twitter:description" content="Explore opportunities with Capital Connect." />
+  <meta name="twitter:image" content="https://capital-web-puce.vercel.app/default-image.jpg" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f3f3f3;
+    }
+    .download-banner {
+      background-color: #007AFF;
+      color: #fff;
+      padding: 15px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+  </style>
+
   <script>
     async function generateToken() {
-      const response = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', {
-        method: 'POST',
-      });
-      const data = await response.json();
-      return data.result[0]; // Returns the token
+      const res = await fetch('https://api.capitalbelgium.be/api/youngster/generate-token', { method: 'POST' });
+      const data = await res.json();
+      return data.result[0];
     }
 
-    async function fetchOpportunityDetails(opportunityId, token) {
-      const response = await fetch(`https://api.capitalbelgium.be/api/youngster/opportunities/${opportunityId}?lang=en`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    async function fetchOpportunityDetails(id, token) {
+      const res = await fetch(`https://api.capitalbelgium.be/api/youngster/opportunities/${id}?lang=en`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await response.json();
-      return data.result; // Returns the opportunity details
+      const data = await res.json();
+      return data.result;
     }
 
     function updateMetaTags(opportunity) {
-      const metaData = {
-        title: opportunity.title,
-        description: opportunity.description,
-        image: opportunity.visual,
-        url: `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${opportunity.id}`,
-      };
-
-      // Update meta tags
-      document.querySelector('meta[property="og:title"]').setAttribute('content', metaData.title);
-      document.querySelector('meta[property="og:description"]').setAttribute('content', metaData.description);
-      document.querySelector('meta[property="og:image"]').setAttribute('content', metaData.image);
-      document.querySelector('meta[property="og:url"]').setAttribute('content', metaData.url);
-      document.querySelector('meta[name="twitter:title"]').setAttribute('content', metaData.title);
-      document.querySelector('meta[name="twitter:description"]').setAttribute('content', metaData.description);
-      document.querySelector('meta[name="twitter:image"]').setAttribute('content', metaData.image);
-    }
-
-    async function redirectToStore() {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      const opportunityId = getParameterByName('id');
-      const appStoreURL = "https://apps.apple.com/app/6742452533";
-      const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
-      const fallbackURL = "https://capital-web-puce.vercel.app/";
-
-      let finalAppStoreURL = appStoreURL;
-      let finalPlayStoreURL = playStoreURL;
-
-      if (opportunityId) {
-        try {
-          // Generate token
-          const token = await generateToken();
-          // Fetch opportunity details
-          const opportunity = await fetchOpportunityDetails(opportunityId, token);
-          // Update meta tags
-          updateMetaTags(opportunity);
-          // Append the opportunity ID to the store URLs
-          finalAppStoreURL = appStoreURL;
-          finalPlayStoreURL += `&id=${opportunityId}`;
-        } catch (error) {
-          console.error('Error fetching opportunity details:', error);
-        }
-      }
-
-      // Check if the user is on an iOS device
-      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        window.location.href = finalAppStoreURL;
-      }
-      // Check if the user is on an Android device
-      else if (/android/i.test(userAgent)) {
-        window.location.href = finalPlayStoreURL;
-      }
-      // Fallback for desktop or other devices
-      else {
-        window.location.href = playStoreURL;
-      }
+      document.querySelector('meta[property="og:title"]').setAttribute('content', opportunity.title);
+      document.querySelector('meta[property="og:description"]').setAttribute('content', opportunity.description);
+      document.querySelector('meta[property="og:image"]').setAttribute('content', opportunity.visual);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${opportunity.id}`);
+      document.querySelector('meta[name="twitter:title"]').setAttribute('content', opportunity.title);
+      document.querySelector('meta[name="twitter:description"]').setAttribute('content', opportunity.description);
+      document.querySelector('meta[name="twitter:image"]').setAttribute('content', opportunity.visual);
     }
 
     function getParameterByName(name, url = window.location.href) {
       name = name.replace(/[\[\]]/g, '\\$&');
-      let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-          results = regex.exec(url);
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+      const results = regex.exec(url);
       if (!results) return null;
-      if (!results[2]) return '';
       return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
 
-    window.onload = redirectToStore;
+    async function openAppOrRedirect() {
+      const opportunityId = getParameterByName('id');
+      const iosStore = "https://apps.apple.com/app/id6742452533";
+      const androidStore = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
+      const fallbackURL = "https://capital-web-puce.vercel.app";
+      const appScheme = "capitalconnect://open"; // Replace with your actual deep link
+
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+      const isAndroid = /android/i.test(userAgent);
+
+      let token = "";
+      let opportunity;
+
+      if (opportunityId) {
+        try {
+          token = await generateToken();
+          opportunity = await fetchOpportunityDetails(opportunityId, token);
+          updateMetaTags(opportunity);
+        } catch (e) {
+          console.warn("Meta update failed:", e);
+        }
+      }
+
+      const timeout = setTimeout(() => {
+        const redirectURL = isIOS ? iosStore : isAndroid ? androidStore : fallbackURL;
+        window.location.href = redirectURL;
+      }, 1500);
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = appScheme + (opportunityId ? `?id=${opportunityId}` : "");
+      document.body.appendChild(iframe);
+
+      window.addEventListener('blur', () => clearTimeout(timeout));
+    }
   </script>
 </head>
 <body>
+  <div class="download-banner" onclick="openAppOrRedirect()">Open App</div>
 </body>
 </html>
