@@ -101,9 +101,9 @@ const universalLink = `https://capital-web-puce.vercel.app/open/RootNavView/Oppo
   }
 
   // auto-open unless query param disables it
-  if (!window.location.search.includes("noredirect=true")) {
-    window.onload = openApp;
-  }
+  // if (!window.location.search.includes("noredirect=true")) {
+  //   window.onload = openApp;
+  // }
 </script>
 
     </head>
