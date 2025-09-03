@@ -1,13 +1,32 @@
 {
-  "version": 2,
   "routes": [
     {
-      "src": "/.well-known/(.*)",
-      "dest": "/.well-known/$1"
+      "src": "/.well-known/apple-app-site-association",
+      "dest": "/public/.well-known/apple-app-site-association",
+      "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600, must-revalidate"
+      }
     },
     {
-      "src": "/.*",
-      "dest": "/index.html"
+      "src": "/apple-app-site-association",
+      "dest": "/public/.well-known/apple-app-site-association",
+      "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600, must-revalidate"
+      }
+    },
+    {
+      "src": "/.well-known/assetlinks.json",
+      "dest": "/public/.well-known/assetlinks.json",
+      "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600, must-revalidate"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/og.js"
     }
   ]
 }
