@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     }
   }
 
-  const universalLink = `https://capital-web-puce.vercel.app/RootNavView/OpportunityDetails?id=${id || ""}`;
+const universalLink = `https://capital-web-puce.vercel.app/open/RootNavView/OpportunityDetails?id=${id || ""}`;
   const appStoreURL = "https://apps.apple.com/app/id6742452533";
   const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
 
@@ -58,46 +58,54 @@ export default async function handler(req, res) {
       <meta name="apple-itunes-app" content="app-id=6742452533, app-argument=${universalLink}" />
 
       <script>
-        function openApp() {
-          const userAgent = navigator.userAgent.toLowerCase();
-          const isIOS = /iphone|ipad|ipod/.test(userAgent);
-          const isAndroid = /android/.test(userAgent);
+  function openApp() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
 
-          const fallback = () => {
-            const fallbackURL = isIOS ? '${appStoreURL}' : isAndroid ? '${playStoreURL}' : '${universalLink}';
-            window.location.href = fallbackURL;
-          };
+    // Universal link must include the /open prefix
+    const universalLink = "https://capital-web-puce.vercel.app/open" + window.location.search;
+    const appStoreURL = "https://apps.apple.com/app/id6742452533";
+    const playStoreURL = "https://play.google.com/store/apps/details?id=com.capital.connect.app";
 
-          if (isIOS) {
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = '${universalLink}';
-            document.body.appendChild(iframe);
+    const fallback = () => {
+      if (isIOS) {
+        window.location.href = appStoreURL;
+      } else if (isAndroid) {
+        window.location.href = playStoreURL;
+      } else {
+        window.location.href = universalLink; // fallback for desktop
+      }
+    };
 
-            setTimeout(() => {
-              if (!document.hidden) fallback();
-              if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
-            }, 1000);
+    if (isIOS) {
+      // iOS tries universal link directly
+      window.location.href = universalLink;
 
-            window.addEventListener('blur', () => {
-              if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
-              clearTimeout();
-            });
+      // Fallback if app not installed
+      setTimeout(() => {
+        if (!document.hidden) fallback();
+      }, 1200);
+    } else if (isAndroid) {
+      // Android tries universal link directly
+      window.location.href = universalLink;
 
-          } else if (isAndroid) {
-            window.location.href = '${universalLink}';
-            setTimeout(() => {
-              if (!document.hidden) fallback();
-            }, 1000);
-          } else {
-            fallback();
-          }
-        }
+      // Fallback if app not installed
+      setTimeout(() => {
+        if (!document.hidden) fallback();
+      }, 1200);
+    } else {
+      // Desktop or others
+      fallback();
+    }
+  }
 
-        if (!window.location.search.includes("noredirect=true")) {
-          window.onload = openApp;
-        }
-      </script>
+  // auto-open unless query param disables it
+  if (!window.location.search.includes("noredirect=true")) {
+    window.onload = openApp;
+  }
+</script>
+
     </head>
     <body>
       <div style="text-align:center; padding: 40px; font-family: sans-serif;">
